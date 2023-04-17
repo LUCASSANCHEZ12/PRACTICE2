@@ -10,7 +10,7 @@ builder.Services.AddEndpointsApiExplorer();
 var configurationBuilder = new ConfigurationBuilder()
         .SetBasePath(builder.Environment.ContentRootPath)
         .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-        .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName},json", optional: false, reloadOnChange: true)
+        .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: false, reloadOnChange: true)
         .AddEnvironmentVariables();
 
 IConfiguration Configuration = configurationBuilder.Build();
