@@ -1,23 +1,32 @@
+using Microsoft.OpenApi.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
-var app = builder.Build();
+var configurationBuilder = new ConfigurationBuilder()
+        .SetBasePath(builder.Environment.ContentRootPath)
+        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+        .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName},json", optional: false, reloadOnChange: true)
+        .AddEnvironmentVariables();
 
-var configurationbuilder = new ConfigurationBuilder()
-        .SetBasePath(app.Environment.ContentRootPath)
-        .AddJsonFile("appsettings.json", optional: false, reloadChange: true)
-        .AddJsonFile($"appsettings.{app.Enciroment.EnviromentName},json", optional: false, reloadChange: true)
-        .AddEnviormentVariables();
-
-IConfiguration Configuration = configurationbuilder.build();
+IConfiguration Configuration = configurationBuilder.Build();
 
 string siteTitle = Configuration.GetSection("Title").Value;
+
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo{
+        Version = "v1",
+        Title = siteTitle
+    });
+});
+
+
+var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -25,11 +34,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
